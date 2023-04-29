@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
 import requests
 
 from budget_structure import Budget
@@ -43,7 +41,51 @@ def main():
 
 	plot_budget_sankey(total_budget, plot_obligations=False)
 
+def get_agencies():
+	"""
+	Get a list of toptier agencies.
+
+	Returns
+	-------
+	:return data: Dict
+		Toptier agencies with their name, toptier agency id, and toptier code
+	"""
+	url = "https://api.usaspending.gov"
+	endpoint = "/api/v2/bulk_download/list_agencies"
+	payload = {"type": "award_agencies"}
+
+	response = requests.post(url+endpoint, json=payload)
+	data = response.json()
+
+	return data
+
 def get_subagencies(toptier_code, fiscal_year=None, award_type_codes=None, agency_type='awarding', order='desc', sort='total_obligations', page=1, limit=10):
+	"""
+	Get a list of subagencies for a given toptier agency.
+
+	Arguments
+	---------
+	:param toptier_code: str
+		Agencies have a numeric code, and this is it.
+	:param fiscal_year: int
+		Year to query. Must be greater than 2008.
+	:param award_type_codes: ??
+	:param agency_type: str
+		'awarding' or 'funding'
+	:param order: str
+		Sorting direction. 'asc' or 'desc'
+	:param sort: str
+		Criterion to sort by. 'total_obligations' for dollar value
+	:param page: int
+		Which page of results to query.
+	:param limit: int
+		Maximum number of results to query.
+
+	Returns
+	-------
+	:return df: DataFrame
+		Subagencies resulting from the query.
+	"""
 	url = "https://api.usaspending.gov"
 	endpoint = "/api/v2/agency/{}/sub_agency".format(toptier_code)
 	
@@ -59,30 +101,6 @@ def get_subagencies(toptier_code, fiscal_year=None, award_type_codes=None, agenc
 		payload["award_type_codes"]=award_type_codes
 
 	response = requests.get(url+endpoint, params=payload)
-	data = response.json()
-
-	df = pd.DataFrame(data["results"])
-
-	return df
-
-def get_agencies(agency=None):
-	url = "https://api.usaspending.gov"
-	endpoint = "/api/v2/bulk_download/list_agencies"
-	payload = {"type": "award_agencies"}
-	if agency is not None:
-		payload["agency"] = agency
-
-	response = requests.post(url+endpoint, json=payload)
-	data = response.json()
-
-	return data
-
-def get_awards(agency): 
-	url = "https://api.usaspending.gov"
-	endpoint = "/api/v2/financial_balances/agencies"
-	payload = {"funding_agency_id": agency["agency_id"], "fiscal_year": 2023}
-
-	response = requests.post(url+endpoint, json=payload)
 	data = response.json()
 
 	df = pd.DataFrame(data["results"])
