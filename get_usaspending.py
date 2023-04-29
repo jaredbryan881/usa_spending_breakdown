@@ -7,13 +7,6 @@ from budget_structure import Budget
 from budget_sankey import plot_budget_sankey
 
 def main():
-	agencies_of_interest=["Department of Energy", 
-						  "Department of the Interior", 
-						  "Department of Defense", 
-						  "Department of Homeland Security",
-						  "Department of Commerce",
-						  "National Aeronautics and Space Administration", 
-						  "National Science Foundation"]
 	agencies_of_interest=["Department of the Interior"]
 
 	# get list of all toptier agencies
@@ -39,7 +32,7 @@ def main():
 
 		total_budget.add_budget(agency["name"], agency_budget)
 
-	plot_budget_sankey(total_budget, plot_obligations=False)
+	plot_budget_sankey(total_budget, plot_obligations=True, obligation_limit=1e7)
 
 def get_agencies():
 	"""

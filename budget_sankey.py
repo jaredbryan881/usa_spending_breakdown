@@ -2,8 +2,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default = "chrome"
 
-def plot_budget_sankey(budget, plot_obligations=False):
-	labels, sources, targets, values = format_budget(budget, plot_obligations=plot_obligations)
+def plot_budget_sankey(budget, plot_obligations=False, obligation_limit=None):
+	labels, sources, targets, values = format_budget(budget, plot_obligations=plot_obligations, obligation_limit=obligation_limit)
 
 	fig = go.Figure(data=[go.Sankey(
 					node = dict(pad = 15,
@@ -17,7 +17,7 @@ def plot_budget_sankey(budget, plot_obligations=False):
 
 	fig.show()
 
-def format_budget(budget, plot_obligations):
+def format_budget(budget, plot_obligations, obligation_limit=None):
 	"""
 	Format the contents of a budget object in such a way that plotly sankey can easily plot it.
 
@@ -61,8 +61,12 @@ def format_budget(budget, plot_obligations):
 			for (k,obligation_label) in enumerate(subagency_budget.sub_obligations.keys()):
 				# define location for obligation, e.g. "Hawaii Volcano Observatory"
 				obligation_ind=running_tally
-				running_tally+=1
 				obligation=subagency_budget.sub_obligations[obligation_label]
+
+				if obligation_limit is not None:
+					if obligation<obligation_limit:
+						continue
+				running_tally+=1
 
 				# add label, nodes, and link
 				labels.append(obligation_label)
