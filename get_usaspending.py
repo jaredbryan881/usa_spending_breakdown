@@ -41,7 +41,7 @@ def main():
 
 		total_budget.add_budget(agency["name"], agency_budget)
 
-	plot_budget_sankey(total_budget)
+	plot_budget_sankey(total_budget, plot_obligations=False)
 
 def get_subagencies(toptier_code, fiscal_year=None, award_type_codes=None, agency_type='awarding', order='desc', sort='total_obligations', page=1, limit=10):
 	url = "https://api.usaspending.gov"
